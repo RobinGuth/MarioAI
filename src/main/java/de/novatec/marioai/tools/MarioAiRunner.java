@@ -37,6 +37,7 @@ import ch.idsia.mario.engine.MarioComponent;
 import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.Evaluator;
 import ch.idsia.tools.RunnerOptions;
+import de.novatec.marioai.agents.included.ExampleAgent;
 import ch.idsia.tools.MainFrame;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Gauge;
@@ -275,9 +276,7 @@ public class MarioAiRunner {
 		        	}
 		        	else {
 		        		agentsToKill=0;
-		        		log.info("Enter anything to start the next round - FINAL ROUND");
-		        		sc.next();
-		        		log.info("Starting final round...");
+		        		log.info("FINAL ROUND");
 		        	}
 		        	
 		        	int agentsPlayed=0;
@@ -292,6 +291,13 @@ public class MarioAiRunner {
 		        		totalAgentsPlayed+=agentsPlayed;
 		        		agentsPlayed=0;
 		        		
+		        		log.info("Agents, which will compete in the this round: ");
+		        		for(Agent nextAgent:tmpAgents) {
+		        			log.info(nextAgent.getName()+"/"+nextAgent.getClass().getSimpleName());
+		        		}
+		        		log.info("Enter anything to start the next round");
+		        		sc.next();
+		        		
 		        		for(EvaluationInfo nextInfo:multiAgentRun(tmpAgents, nextLevel, new ChallengeTask(), 24, zoomFactor, false, true, false, true, true)) {
 		        			Double oldScore=scores.get(nextInfo.getUsedAgent());
 		        			if(oldScore==null) oldScore=0.0;
@@ -299,8 +305,8 @@ public class MarioAiRunner {
 		        		}
 		        		
 		        		if(totalAgentsPlayed<agents.size()) {
-		        		log.info("Enter anything to continue");
-		        		sc.next();
+//		        		log.info("Enter anything to continue");
+//		        		sc.next();
 		        		}
 		        	}
 
@@ -373,7 +379,7 @@ public class MarioAiRunner {
 			System.exit(1);
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (InstantiationException e) {
+		} catch (InstantiationException e) { 
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			log.catching(e);
@@ -389,20 +395,31 @@ public class MarioAiRunner {
 	
 	public static void main (String[] args) {
 		
-		List<LevelConfig> levels=new ArrayList<>();
-
-		levels.add(LevelConfig.HARD_ENEMY_TRAINING);
-		levels.add(LevelConfig.BOWSERS_CASTLE);
-		levels.add(LevelConfig.DEALBREAKER);
-		
-		challengeRun("de.novatec.marioai.agents.included",levels, 4,  4, true,true);
-		System.exit(0);
-		
-//		List<Agent> agents=new ArrayList<>();
+//		List<LevelConfig> levels=new ArrayList<>();
+//
+//		levels.add(LevelConfig.HARD_ENEMY_TRAINING);
+//		levels.add(LevelConfig.BOWSERS_CASTLE);
+//		levels.add(LevelConfig.DEALBREAKER);
 //		
-//		agents.add(new ExampleAgent());
-//		
-//		System.out.println(multiAgentRun(agents, LevelConfig.LEVEL_1, new ChallengeTask(), 24, 3, true, true, false, false));
+//		challengeRun("de.novatec.marioai.agents.included",levels, 4,  4, true,true);
+//		System.exit(0);
+		
+		List<Agent> agents=new ArrayList<>();
+		
+		agents.add(new MarioNtAgent() {
+			
+			@Override
+			public String getName() {
+				return "Test";
+			}
+			
+			@Override
+			public MarioInput doAiLogic() {
+				return getMarioInput();
+			}
+		});
+		
+		multiAgentRun(agents, LevelConfig.LEVEL_1, new ChallengeTask(), 24, 3, true, false, false, false, false);
 	}
 }
 

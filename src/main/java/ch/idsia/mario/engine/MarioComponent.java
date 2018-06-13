@@ -296,7 +296,6 @@ public class MarioComponent extends JComponent implements Environment {
             if(tmpPerformTick==true)performTick=false;
             
         }//while 
-        if(rOptions.getAgent() instanceof MarioNtAgent)((MarioNtAgent)rOptions.getAgent()).roundOver(levelScene.getMarioStatus());
         
         //--- Show results on end screen
         if (this.isVisible()) redrawEndScreen();
@@ -305,6 +304,7 @@ public class MarioComponent extends JComponent implements Environment {
         evaluationInfo.agentType = rOptions.getAgent().getClass().getSimpleName();
         evaluationInfo.agentName = rOptions.getAgent().getName();
         evaluationInfo.marioStatus = levelScene.getMarioStatus();
+    	if(rOptions.getAgent() instanceof MarioNtAgent)((MarioNtAgent)rOptions.getAgent()).roundOver(levelScene.getMarioStatus());
         evaluationInfo.lengthOfLevelPassedPhys = levelScene.getMarioX();
         evaluationInfo.lengthOfLevelPassedCells =  levelScene.getMarioMapX();
         evaluationInfo.levelXExit=levelScene.getLevelXExit();
@@ -356,6 +356,8 @@ public class MarioComponent extends JComponent implements Environment {
 			
 		 new Thread(tmp).start();
         }
+    	
+
         return evaluationInfo;
     }
     
@@ -406,7 +408,7 @@ public class MarioComponent extends JComponent implements Environment {
 			else blackoutTimer-=10;
 		}
 		
-		if (levelScene.getTimeLeft()<=0||levelScene.getMarioStatus()==STATUS.LOSE) { 
+		if (/*levelScene.getTimeLeft()<=0||*/levelScene.getMarioStatus()==STATUS.LOSE) { 
 			setPaused(true);
 			renderBlackout(g, (int)levelScene.getMarioX() - xCam, (int)levelScene.getMarioY() - yCam, (int) (blackoutTimer));
 			if(running)levelFailed();
